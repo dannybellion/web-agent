@@ -5,6 +5,6 @@ description = "A Pydantic AI Web Agent"
 requires-python = "==3.12.6"
 dependencies = [
     "pydantic",
-    "pydantic-ai",
-    "crawl4ai"
+    "pydantic-ai[logfire]",
+    "crawl4ai",
 ]

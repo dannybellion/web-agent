@@ -1,0 +1,8 @@
+Metadata-Version: 2.2
+Name: web-agent
+Version: 0.1.0
+Summary: A Pydantic AI Web Agent
+Requires-Python: ==3.12.6
+Requires-Dist: pydantic
+Requires-Dist: pydantic-ai
+Requires-Dist: crawl4ai
