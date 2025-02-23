@@ -5,8 +5,8 @@ from pydantic import BaseModel, Field
 from pydantic_ai import Agent, RunContext
 import httpx
 import os
-import logfire
-logfire.configure()
+from fastapi import FastAPI, HTTPException
+
 
 # ---------------------------
 # Pydantic Agent Configuration
@@ -96,3 +96,25 @@ class WebAgent:
         """
         result = await self.agent.run(input_text, deps=self.deps)
         return result
+    
+# ---------------------------
+# FastAPI App for the Web Agent
+# ---------------------------
+app = FastAPI(title="Web Agent API")
+
+@app.get("/")
+async def root():
+    return {"message": "Web Agent API is running"}
+
+class QueryInput(BaseModel):
+    input_text: str
+
+web_agent = WebAgent()
+
+@app.post("/run")
+async def run_web_agent(query: QueryInput):
+    try:
+        result = await web_agent.run(query.input_text)
+        return result.data
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))

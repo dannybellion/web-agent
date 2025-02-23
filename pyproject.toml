@@ -7,4 +7,5 @@ dependencies = [
     "pydantic",
     "pydantic-ai[logfire]",
     "crawl4ai",
+    "fastapi[standard]>=0.115.8",
 ]
