@@ -6,6 +6,7 @@ from pydantic_ai import Agent, RunContext
 import httpx
 import os
 from fastapi import FastAPI, HTTPException
+import inspect
 import logfire
 logfire.configure()
 
@@ -112,6 +113,12 @@ class QueryInput(BaseModel):
     input_text: str
 
 web_agent = WebAgent()
+
+@app.get("/tool-docs")
+async def get_tool_docs():
+    return {
+        "web_agent": inspect.getdoc(web_agent.run),
+    }
 
 @app.post("/run")
 async def run_web_agent(query: QueryInput):

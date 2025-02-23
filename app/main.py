@@ -10,7 +10,7 @@ async def main():
 
     print("*** Model Response: ***")
     print(response.data.content)
-    
+    print("*** End of Model Response ***")
 
 if __name__ == "__main__":
     asyncio.run(main())
