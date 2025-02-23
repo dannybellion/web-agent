@@ -4,6 +4,7 @@ from pydantic import BaseModel, Field
 from pydantic_ai import Agent, RunContext
 import httpx
 import logfire
+import inspect
 logfire.configure()
 
 # ---------------------------
@@ -33,7 +34,7 @@ class MetaAgentDeps:
 # ---------------------------
 async def call_web_agent(ctx: RunContext, input_text: str):
     url = ctx.deps.web_agent_url
-    timeout = httpx.Timeout(10.0)
+    timeout = httpx.Timeout(20.0)
     async with httpx.AsyncClient(timeout=timeout) as client:
         response = await client.post(
             f"{url}/run",
@@ -59,8 +60,34 @@ class MetaAgent:
             result_type=Response,
             system_prompt=SYSTEM_PROMPT,
         )
-        # Register both tools.
+
         self.agent.tool(call_web_agent)
+        self.tool_docs = {
+            "call_web_agent": inspect.getdoc(call_web_agent)
+        }
+        
+    async def update_tool_docs(self):
+        """
+        Fetch up-to-date tool documentation from the remote web agent 
+        and update the tool's docstring.
+        """
+        async with httpx.AsyncClient() as client:
+            resp = await client.get(f"{self.deps.web_agent_url}/tool-docs")
+            resp.raise_for_status()
+            docs = resp.json()
+            print("*** Tool Docs: ***")
+            print(docs)
+            print("*** End of Tool Docs ***")
+            if "call_web_agent" in docs:
+                call_web_agent.__doc__ = docs["call_web_agent"]
+                self.tool_docs["call_web_agent"] = docs["call_web_agent"]
+                
+    @classmethod
+    async def create(cls):
+        """Async instance creation"""
+        instance = cls()
+        await instance.update_tool_docs()
+        return instance
 
     async def run(self, input_text: str) -> Response:
         """

@@ -1,7 +1,5 @@
 from app.agents.meta_agent import MetaAgent
 import asyncio
-import logfire
-logfire.configure()
 
 def main():
     meta_agent = MetaAgent()
@@ -10,7 +8,8 @@ def main():
 
     response = asyncio.run(meta_agent.run(query))
 
-    print(response.data)
+    print("*** Model Response: ***")
+    print(response.data.content)
     
 
 if __name__ == "__main__":
