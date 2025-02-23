@@ -3,7 +3,8 @@ from typing import List
 from pydantic import BaseModel, Field
 from pydantic_ai import Agent, RunContext
 import httpx
-import os
+import logfire
+logfire.configure()
 
 # ---------------------------
 # Pydantic Agent Configuration
@@ -30,15 +31,19 @@ class MetaAgentDeps:
 # ---------------------------
 # Tools
 # ---------------------------
-async def call_web_agent(self, ctx: RunContext, input_text: str):
+async def call_web_agent(ctx: RunContext, input_text: str):
     url = ctx.deps.web_agent_url
-    async with httpx.AsyncClient() as client:
+    timeout = httpx.Timeout(10.0)
+    async with httpx.AsyncClient(timeout=timeout) as client:
         response = await client.post(
             f"{url}/run",
             json={"input_text": input_text}
         )
         response.raise_for_status()
         data = response.json()
+        print("*** Web Agent Response: ***")
+        print(data)
+        print("*** End of Web Agent Response ***")
         return data
 
 

@@ -6,6 +6,8 @@ from pydantic_ai import Agent, RunContext
 import httpx
 import os
 from fastapi import FastAPI, HTTPException
+import logfire
+logfire.configure()
 
 
 # ---------------------------
