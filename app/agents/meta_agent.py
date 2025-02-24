@@ -33,6 +33,14 @@ class MetaAgentDeps:
 # Tools
 # ---------------------------
 async def call_web_agent(ctx: RunContext, input_text: str):
+    """Call the web agent with the given input text.
+
+    Args:
+        input_text (str): The input text to pass to the web agent.
+
+    Returns:
+        content (str): The content of the web agent's response.
+    """
     url = ctx.deps.web_agent_url
     timeout = httpx.Timeout(20.0)
     async with httpx.AsyncClient(timeout=timeout) as client:
